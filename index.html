@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>團購便當頁面</title>
+    <style>
+        .meal-item {
+            margin-bottom: 10px;
+        }
+        .meal-name {
+            width: 5cm; /* 設置餐點名稱格子的寬度為五公分 */
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .gif-container {
+            position: fixed;
+            right: 10px;
+            top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gif-container img {
+            margin-bottom: 10px;
+            width: 150px; /* 可以根據需要調整尺寸 */
+            height: auto;
+        }
+        .marquee {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(-100%, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="marquee">
+        <span>輸入完成後請點計算 統計完後請按下友善列印</span>
+    </div>
+    
+    <h1>團購便當</h1>
+    <div id="meal-items">
+        <!-- 這裡會自動生成餐點項目 -->
+    </div>
+    <button onclick="calculate()">計算</button>
+    
+    <div class="result">
+        <h2>統計結果</h2>
+        <div id="results"></div>
+        <button onclick="printResults()">友善列印</button>
+    </div>
+
+    <div class="gif-container">
+        <img src="DOGE1.gif" alt="DOGE1">
+        <img src="DOGE2.gif" alt="DOGE2">
+    </div>
+
+    <script>
+        const mealCount = 15;
+
+        function createMealItems() {
+            const mealItemsContainer = document.getElementById('meal-items');
+            const options = ['一科', '二科', '三科', '四科', '其他'];
+            for (let i = 0; i < mealCount; i++) {
+                const mealItemDiv = document.createElement('div');
+                mealItemDiv.className = 'meal-item';
+                
+                const mealInput = document.createElement('input');
+                mealInput.type = 'text';
+                mealInput.placeholder = '餐點名稱';
+                mealInput.className = 'meal-name';
+                
+                const priceInput = document.createElement('input');
+                priceInput.type = 'number';
+                priceInput.placeholder = '餐點金額';
+                priceInput.className = 'meal-price';
+
+                const dropdown = document.createElement('select');
+                dropdown.className = 'department-name';
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.innerText = option;
+                    dropdown.appendChild(opt);
+                });
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.placeholder = '點餐人員姓名';
+                nameInput.className = 'person-name';
+                
+                mealItemDiv.appendChild(mealInput);
+                mealItemDiv.appendChild(priceInput);
+                mealItemDiv.appendChild(dropdown);
+                mealItemDiv.appendChild(nameInput);
+                mealItemsContainer.appendChild(mealItemDiv);
+            }
+        }
+
+        function calculate() {
+            const mealNames = document.getElementsByClassName('meal-name');
+            const mealPrices = document.getElementsByClassName('meal-price');
+            const departments = document.getElementsByClassName('department-name');
+            const personNames = document.getElementsByClassName('person-name');
+            
+            const resultDiv = document.getElementById('results');
+            resultDiv.innerHTML = ''; // 清空之前的結果
+            
+            const orderSummary = {};
+            let totalMeals = 0;
+            let totalAmount = 0;
+            
+            for (let i = 0; i < mealCount; i++) {
+                const mealName = mealNames[i].value.trim();
+                const mealPrice = parseFloat(mealPrices[i].value.trim()) || 0;
+                const department = departments[i].value;
+                const personName = personNames[i].value.trim();
+                
+                if (mealName && personName) {
+                    const fullName = `${department}-${personName}`;
+                    if (!orderSummary[fullName]) {
+                        orderSummary[fullName] = { items: [], total: 0 };
+                    }
+                    
+                    orderSummary[fullName].items.push(`${mealName} (${mealPrice} 元)`);
+                    orderSummary[fullName].total += mealPrice;
+                    totalMeals++;
+                    totalAmount += mealPrice;
+                }
+            }
+            
+            for (const [name, summary] of Object.entries(orderSummary)) {
+                const personSummary = document.createElement('div');
+                personSummary.innerText = `${name} 點了 ${summary.items.join(', ')} ，共需付款 ${summary.total} 元`;
+                resultDiv.appendChild(personSummary);
+            }
+            
+            const totalSummary = document.createElement('div');
+            totalSummary.innerText = `總共 ${totalMeals} 份餐點，總金額 ${totalAmount} 元`;
+            resultDiv.appendChild(totalSummary);
+        }
+
+        function printResults() {
+            const printContent = document.getElementById('results').innerHTML;
+            const originalContent = document.body.innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload(); // 重新加載頁面以恢復輸入框
+        }
+
+        createMealItems();
+    </script>
+</body>
+</html>
