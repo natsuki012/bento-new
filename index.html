@@ -8,8 +8,8 @@
         .meal-item {
             margin-bottom: 10px;
         }
-        .meal-name {
-            width: 5cm; /* 設置餐點名稱格子的寬度為五公分 */
+        .meal-name, .person-name {
+            width: 5cm; /* 設置餐點名稱和點餐人員姓名格子的寬度為五公分 */
         }
         .result {
             margin-top: 20px;
@@ -71,7 +71,7 @@
     </div>
 
     <script>
-        const mealCount = 15;
+        const mealCount = 30; // 增加餐點輸入框和點餐人員姓名輸入框的數量到30
 
         function createMealItems() {
             const mealItemsContainer = document.getElementById('meal-items');
